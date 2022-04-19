@@ -4,13 +4,26 @@ import { Row, Col, Slider, Image } from 'antd';
 import 'antd/dist/antd.css';
 import { homeImg } from '@/constants/index';
 import RegisterFormComponent from './components/RegisterFormComponent';
-import { history } from 'umi';
+import { history, Dispatch, AuthModelState, Loading } from 'umi';
+import { connect } from 'dva';
 
-RegisterComponent.propTypes = {};
+interface Props {
+  dispatch: Dispatch;
+  loading: Loading;
+  auth: AuthModelState;
+}
 
-function RegisterComponent(props: any) {
+const RegisterComponent: React.FC<Props> = ({ auth, dispatch, loading }) => {
   const handleNavigate = () => {
     history.push('/login');
+  };
+  const isLoading = !!loading.effects['auth/register'];
+
+  const handleUserInfo = (data: object) => {
+    dispatch({
+      type: 'auth/register',
+      payload: data,
+    });
   };
 
   return (
@@ -20,7 +33,10 @@ function RegisterComponent(props: any) {
           <Image src={homeImg} preview={false} />
         </Col>
         <Col span={10}>
-          <RegisterFormComponent />
+          <RegisterFormComponent
+            handleUserInfo={handleUserInfo}
+            isLoading={isLoading}
+          />
           <h6 onClick={handleNavigate}>
             Đã có có tài khoản rồi ? Đăng nhập ngay
           </h6>
@@ -28,6 +44,9 @@ function RegisterComponent(props: any) {
       </Row>
     </div>
   );
-}
+};
 
-export default RegisterComponent;
+export default connect(({ auth, loading }: any) => ({
+  auth,
+  loading,
+}))(RegisterComponent);

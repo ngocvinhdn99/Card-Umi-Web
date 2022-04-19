@@ -1,107 +1,99 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './styles.less';
-import { Row, Col } from 'antd';
-import BotHandComponent from './components/BotHandComponent';
-import DividerComponent from './components/DividerComponent';
-import PlayerHandComponent from './components/PlayerHandComponent';
-import request from 'umi-request';
+import HandingComponent from './components/HandingComponent';
+import BotSelectComponent from './components/BotSelectComponent';
+import { STORAGE_KEYS } from '@/constants/index';
+import { Redirect } from 'umi';
+import { Menu, Dropdown, Button } from 'antd';
+import {
+  DownOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  UserSwitchOutlined,
+} from '@ant-design/icons';
+import { Dispatch, BotsModelState, Loading } from 'umi';
+import { connect } from 'dva';
 
-HomeComponent.propTypes = {};
+interface Props {
+  dispatch: Dispatch;
+  loading: Loading;
+  bots: BotsModelState;
+}
 
-function HomeComponent(props: any) {
-  const [bet, setBet] = useState(0);
-  const [statusList, setStatusList] = useState({
-    isRoll: false,
-    isOpen: false,
-  });
+const menu = (
+  <Menu>
+    <Menu.Item>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://www.antgroup.com"
+      >
+        <UserSwitchOutlined /> Account
+      </a>
+    </Menu.Item>
+    <Menu.Item>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://www.antgroup.com"
+      >
+        <LogoutOutlined /> Log out
+      </a>
+    </Menu.Item>
+  </Menu>
+);
 
-  const [point, setPoint] = useState([
-    {
-      name: 'bot',
-      value: 30,
-    },
-    {
-      name: 'player',
-      value: 20,
-    },
-  ]);
+const HomeComponent: React.FC<Props> = ({ bots, dispatch, loading }) => {
+  const { botList, botInfo } = bots;
+  const idBot = botInfo?.id;
 
-  const handleChangeBet = (newBet: any) => {
-    setBet(newBet);
+  useEffect(() => {
+    dispatch({
+      type: 'bots/getBotList',
+    });
+  }, []);
+
+  const handleGetBotById = (botId: string) => {
+    console.log('botId', botId);
+    dispatch({
+      type: 'bots/getBotById',
+      payload: {
+        botId,
+      },
+    });
   };
 
-  // console.log('Vinh test API');
-  // request('http://localhost:5000/v1/productCategory/625bb3f77216350614d4b817', {
-  //   method: 'delete',
-  // })
-  //   .then(function (response) {
-  //     console.log(response);
-  //   })
-  //   .catch(function (error) {
-  //     console.log(error);
-  //   });
+  console.log(botInfo);
+
+  const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+  if (!token) {
+    return <Redirect to="/login" />;
+  }
 
   return (
     <div className={styles.root}>
       <div className={styles.container}>
-        <Row gutter={[16, 16]} className={styles.rowAnt}>
-          <Col span={10}>
-            <BotHandComponent statusList={statusList} pointValue={point[0]} />
-          </Col>
-          <Col span={4}>
-            <DividerComponent
-              setStatusList={setStatusList}
-              statusList={statusList}
-              point={point}
-              bet={bet}
-              handleChangeBet={handleChangeBet}
-            />
-          </Col>
-          <Col span={10}>
-            <PlayerHandComponent
-              statusList={statusList}
-              pointValue={point[1]}
-            />
-          </Col>
-        </Row>
+        <Dropdown overlay={menu} placement="bottomRight">
+          <Button className={styles.accountBtn}>
+            <UserOutlined /> Huynh Ngoc Vinh <DownOutlined />
+          </Button>
+        </Dropdown>
+
+        {!idBot && (
+          <BotSelectComponent
+            botList={botList}
+            handleGetBotById={handleGetBotById}
+          />
+        )}
+
+        {idBot && <HandingComponent />}
       </div>
     </div>
   );
-}
+};
 
-export default HomeComponent;
-
-{
-  /* <div className={styles.playerPanel}>
-          <div className={styles.playerName}>Winner</div>
-          <div className={styles.playerScore}>43</div>
-          <div className={styles.playerCurrentBox}>
-            <div className={styles.playerCurrentLabel}>Current</div>
-            <div className={styles.playerCurrentScore}>11</div>
-          </div>
-        </div>
-
-        <div className={styles.playerPanel}>
-          <div className={styles.playerName}>Player 2</div>
-          <div className={styles.playerScore}>72</div>
-          <div className={styles.playerCurrentBox}>
-            <div className={styles.playerCurrentLabel}>Current</div>
-            <div className={styles.playerCurrentScore}>0</div>
-          </div>
-        </div>
-
-        <button className={styles.btnNew}>New game</button>
-        <button className={styles.btnRoll}>
-          <i className={styles.ionIosLoop}></i>Roll dice
-        </button>
-        <button className={styles.btnHold}>
-          <i className={styles.ionIosDownloadOutline}></i>Hold
-        </button>
-
-        <input
-          type="number"
-          placeholder="Final score"
-          className={styles.finalScore}
-        /> */
-}
+export default connect(({ bots, loading }: any) => ({
+  bots,
+  loading,
+}))(HomeComponent);

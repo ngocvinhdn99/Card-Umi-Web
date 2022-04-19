@@ -16,13 +16,18 @@ function InputField(props: IMyProps) {
   const hasError = !!errors[name];
 
   const errorMessage = errors[name]?.message;
+  const isPassWordField = name === 'password';
 
   return (
     <div>
       <label htmlFor="" className="label">
         {name}
       </label>
-      <Controller name={name} control={form.control} as={Input} />
+      <Controller
+        name={name}
+        control={form.control}
+        as={isPassWordField ? Input.Password : Input}
+      />
       {hasError && <span className={styles.error}>{errorMessage}</span>}
     </div>
   );
