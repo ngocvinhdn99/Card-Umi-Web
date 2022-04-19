@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Button } from 'antd';
 import 'antd/dist/antd.css';
 import styles from '../index.less';
 import { useForm } from 'react-hook-form';
@@ -9,8 +9,13 @@ import * as yup from 'yup';
 import InputField from './InputField';
 
 RegisterForm.propTypes = {};
+interface IMyProps {
+  handleUserInfo: Function;
+  isLoading: boolean;
+}
 
-function RegisterForm(props: any) {
+function RegisterForm(props: IMyProps) {
+  const { handleUserInfo, isLoading } = props;
   const schema = yup.object().shape({
     name: yup.string().min(1, 'Vui lòng nhập tên người dùng'),
     email: yup
@@ -52,7 +57,9 @@ function RegisterForm(props: any) {
   });
 
   const handleSubmit = (valuesForm: any) => {
-    console.log(valuesForm);
+    if (valuesForm) {
+      handleUserInfo(valuesForm);
+    }
   };
 
   return (
@@ -62,7 +69,7 @@ function RegisterForm(props: any) {
         <InputField form={form} name="email" />
         <InputField form={form} name="password" />
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={isLoading}>
             Submit
           </Button>
         </Form.Item>

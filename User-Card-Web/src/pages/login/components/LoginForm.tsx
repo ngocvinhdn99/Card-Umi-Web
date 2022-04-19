@@ -9,8 +9,14 @@ import * as yup from 'yup';
 import InputField from './InputField';
 
 LoginForm.propTypes = {};
+interface IMyProps {
+  handleUserInfo: Function;
+  isLoading: boolean;
+}
 
-function LoginForm(props: any) {
+function LoginForm(props: IMyProps) {
+  const { handleUserInfo, isLoading } = props;
+
   const schema = yup.object().shape({
     email: yup
       .string()
@@ -50,7 +56,9 @@ function LoginForm(props: any) {
   });
 
   const handleSubmit = (valuesForm: any) => {
-    console.log(valuesForm);
+    if (valuesForm) {
+      handleUserInfo(valuesForm);
+    }
   };
 
   return (
@@ -59,7 +67,7 @@ function LoginForm(props: any) {
         <InputField form={form} name="email" />
         <InputField form={form} name="password" />
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={isLoading}>
             Submit
           </Button>
         </Form.Item>
