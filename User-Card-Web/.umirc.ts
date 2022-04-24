@@ -14,6 +14,7 @@ export default defineConfig({
     },
     { path: '/register', component: '@/pages/register/index', exact: true },
     { path: '/home', component: '@/pages/home/index', exact: true },
+    { path: '/account', component: '@/pages/account/index', exact: true },
   ],
   fastRefresh: {},
 });

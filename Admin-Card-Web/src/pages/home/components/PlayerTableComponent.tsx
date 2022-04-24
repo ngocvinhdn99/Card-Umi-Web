@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Table, Tag, Space, Modal, Button } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import UpdatedForm from './UpdatedForm';
+import PlayerUpdatedForm from '@/components/Form/PlayerUpdatedForm';
 
 PlayerTableComponent.propTypes = {};
 const { confirm } = Modal;
@@ -225,9 +225,6 @@ function PlayerTableComponent(props: any) {
   };
 
   const handlePageChange = (page: any, limit: any) => {
-    console.log('page', page);
-    console.log('limit', limit);
-
     const newPagination = {
       ...pagination,
       page,
@@ -266,7 +263,10 @@ function PlayerTableComponent(props: any) {
         footer={null}
       >
         {updatedData && (
-          <UpdatedForm updatedData={updatedData} handleUpdate={handleUpdate} />
+          <PlayerUpdatedForm
+            updatedData={updatedData}
+            handleUpdate={handleUpdate}
+          />
         )}
       </Modal>
     </div>

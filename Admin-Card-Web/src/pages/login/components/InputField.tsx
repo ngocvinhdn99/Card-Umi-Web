@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Input, Form, Row, Col } from 'antd';
+import { Input } from 'antd';
 import { Controller } from 'react-hook-form';
 import styles from '../index.less';
 
@@ -16,22 +16,20 @@ function InputField(props: IMyProps) {
   const hasError = !!errors[name];
 
   const errorMessage = errors[name]?.message;
+  const isPassWordField = name === 'password';
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={5}>
-        <span>{name.charAt(0).toUpperCase() + name.slice(1)}</span>
-      </Col>
-      <Col span={19}>
-        <Controller
-          name={name}
-          control={form.control}
-          as={Input}
-          status={hasError ? 'error' : ''}
-        />
-        <span className={styles.error}>{errorMessage}</span>
-      </Col>
-    </Row>
+    <div>
+      <label htmlFor="" className="label">
+        {name}
+      </label>
+      <Controller
+        name={name}
+        control={form.control}
+        as={isPassWordField ? Input.Password : Input}
+      />
+      {hasError && <span className={styles.error}>{errorMessage}</span>}
+    </div>
   );
 }
 

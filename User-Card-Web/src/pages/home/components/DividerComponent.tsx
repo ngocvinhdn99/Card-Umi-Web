@@ -2,7 +2,7 @@ import { FolderOpenOutlined, RedoOutlined } from '@ant-design/icons';
 import { Image, Typography, Input, Button } from 'antd';
 import React, { useState, useRef } from 'react';
 import styles from '../styles.less';
-import imageList from '../../cardImgList';
+import imageList from '@/configs/image';
 
 const { Title } = Typography;
 DividerComponent.propTypes = {};
@@ -10,12 +10,13 @@ interface IMyProps {
   setStatusList: any;
   statusList: any;
   point: any;
-  bet: any;
-  handleChangeBet: any;
+  handleStartGame: Function;
 }
 
 function DividerComponent(props: IMyProps) {
-  const { setStatusList, statusList, point, bet, handleChangeBet } = props;
+  const { setStatusList, statusList, point, handleStartGame } = props;
+  const [bet, setBet] = useState(0);
+
   const { isRoll, isOpen } = statusList;
   const botImageRef = useRef(document.createElement('div'));
 
@@ -37,7 +38,7 @@ function DividerComponent(props: IMyProps) {
 
   const handleChangeBetValue = (e: any) => {
     const valueNumber = Number(e.target.value);
-    handleChangeBet(valueNumber);
+    setBet(valueNumber);
 
     if (valueNumber === 0) {
       const newError = {
@@ -49,14 +50,40 @@ function DividerComponent(props: IMyProps) {
       return;
     }
 
-    const indexError = point.findIndex(
-      (value: any) => value.value < valueNumber,
-    );
+    // const indexError = point.findIndex(
+    //   (value: any) => value.value < valueNumber,
+    // );
+    // if (indexError >= 0) {
+    //   const type = point[indexError].name;
+    //   const newError = {
+    //     status: true,
+    //     textError: `Vui lòng nhập số lượng bet nhỏ hơn point của ${type}`,
+    //     errorType: 'bet',
+    //   };
+    //   setIsError(newError);
+    //   return;
+    // }
+
+    // Case bet Value > point of player || remainPoint of bot
+    const indexError = point.findIndex((each: any) => each.point < valueNumber);
     if (indexError >= 0) {
-      const type = point[indexError].name;
+      const typeText = point[indexError].typeText;
       const newError = {
         status: true,
-        textError: `Vui lòng nhập số lượng bet nhỏ hơn point của ${type}`,
+        textError: `Vui lòng nhập số lượng bet nhỏ hơn point của ${typeText}`,
+        errorType: 'bet',
+      };
+      setIsError(newError);
+      return;
+    }
+
+    // Case bet Value not include from min to max of bot
+    const isValidMinMax =
+      point[0].minBet <= valueNumber && point[0].maxBet >= valueNumber;
+    if (!isValidMinMax) {
+      const newError = {
+        status: true,
+        textError: `Vui lòng nhập giá trị bet chơi trong khoảng min-max của Bot`,
         errorType: 'bet',
       };
       setIsError(newError);
@@ -113,20 +140,23 @@ function DividerComponent(props: IMyProps) {
 
     // Case click roll normally -> animation for bot card image
     if (type === 'isRoll' && !isRoll && !isOpen) {
-      botImageRef.current.animate(
+      botImageRef.current?.animate(
         [{ transform: 'scale(0.5) translate(-400%, -100%)' }],
         {
           duration: 900,
         },
       );
       setTimeout(() => {
-        botImageRef.current.animate(
+        botImageRef.current?.animate(
           [{ transform: 'scale(0.5) translate(400%, -100%)' }],
           {
             duration: 900,
           },
         );
       }, 1000);
+
+      // Call API
+      handleStartGame(bet);
     }
 
     setStatusList((prev: any) => ({
@@ -154,6 +184,16 @@ function DividerComponent(props: IMyProps) {
     }
 
     setIsDisabledInput(true);
+  };
+
+  const handlePlayAgain = () => {
+    setIsDisabledInput(false);
+
+    const defaultStatusList = {
+      isRoll: false,
+      isOpen: false,
+    };
+    setStatusList(defaultStatusList);
   };
 
   return (
@@ -189,6 +229,15 @@ function DividerComponent(props: IMyProps) {
             onClick={handlePlaying}
           >
             Cược điểm Bet
+          </Button>
+
+          <Button
+            type="default"
+            className={styles.betBtn}
+            onClick={handlePlayAgain}
+            disabled={!isDisabledInput || !isOpen}
+          >
+            Chơi tiếp
           </Button>
         </div>
         <div className={styles.errorTextContainer}>

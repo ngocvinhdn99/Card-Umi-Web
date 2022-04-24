@@ -1,13 +1,14 @@
 import styles from './index.less';
-import imageList from './cardImgList';
+import imageList from '@/configs/image';
 
 export default function IndexPage() {
-  console.log(imageList.image2C);
   return (
     <div>
       <h1 className={styles.title}>Page index</h1>
       {/* <2CImage /> */}
-      <img src={imageList.imageAH} />
+      <img src={imageList.imageAS} />
+      <img src={imageList.card10S} />
+      <img src={imageList.cardTS} />
     </div>
   );
 }

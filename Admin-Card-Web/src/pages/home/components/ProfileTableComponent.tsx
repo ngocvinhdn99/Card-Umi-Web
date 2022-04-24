@@ -5,20 +5,25 @@ import {
   ExclamationCircleOutlined,
   UsergroupAddOutlined,
 } from '@ant-design/icons';
-import BotsUpdatedForm from '@/components/Form/BotsUpdatedForm';
+import ProfileUpdatedForm from '@/components/Form/ProfileUpdatedForm';
 import styles from '../index.less';
-import BotsCreatedForm from '@/components/Form/BotsCreatedForm';
 
-BotTableComponent.propTypes = {};
+ProfileTableComponent.propTypes = {};
 const { confirm } = Modal;
 interface IMyProps {
-  botList: any;
-  handleBotsModelApi: Function;
+  profileList: any;
+  handleProfileModelApi: Function;
   paginationModel: any;
+  isLoadingUpdateProfile: boolean;
 }
 
-function BotTableComponent(props: IMyProps) {
-  const { botList, handleBotsModelApi, paginationModel } = props;
+function ProfileTableComponent(props: IMyProps) {
+  const {
+    profileList,
+    handleProfileModelApi,
+    paginationModel,
+    isLoadingUpdateProfile,
+  } = props;
   const [pagination, setPagination] = useState({
     page: 1,
     total: 24,
@@ -28,12 +33,12 @@ function BotTableComponent(props: IMyProps) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const dataResult = botList.map((value: any, index: any) => ({
+    const dataResult = profileList.map((value: any, index: any) => ({
       key: index,
       ...value,
     }));
     setData(dataResult);
-  }, [botList]);
+  }, [profileList]);
 
   const columns = [
     {
@@ -43,24 +48,29 @@ function BotTableComponent(props: IMyProps) {
       render: (text: string) => <a>{text}</a>,
     },
     {
-      title: 'TotalPoints',
-      dataIndex: 'totalPoints',
-      key: 'totalPoints',
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
     },
     {
-      title: 'RemainPoints',
-      dataIndex: 'remainPoints',
-      key: 'remainPoints',
+      title: 'Point',
+      dataIndex: 'point',
+      key: 'point',
     },
     {
-      title: 'Min Bet',
-      dataIndex: 'minBet',
-      key: 'minBet',
+      title: 'Total Game',
+      dataIndex: 'totalGame',
+      key: 'totalGame',
     },
     {
-      title: 'Max Bet',
-      dataIndex: 'maxBet',
-      key: 'maxBet',
+      title: 'Win Game',
+      dataIndex: 'winGame',
+      key: 'winGame',
+    },
+    {
+      title: 'Win Rate',
+      dataIndex: 'winRate',
+      key: 'winRate',
     },
     {
       title: 'Action',
@@ -75,7 +85,6 @@ function BotTableComponent(props: IMyProps) {
   ];
 
   const [isUpdatedModalVisible, setIsUpdatedModalVisible] = useState(false);
-  const [isCreatedModalVisible, setIsCreatedModelVisible] = useState(false);
   const [updatedData, setUpdatedData] = useState(null);
 
   const showModal = (text: string, record: any) => {
@@ -83,22 +92,14 @@ function BotTableComponent(props: IMyProps) {
     setIsUpdatedModalVisible(true);
   };
 
-  const handleOpenCreatedForm = () => {
-    setIsCreatedModelVisible(true);
-  };
-
   const handleCancel = (type: string) => {
     if (type === 'update') {
       setIsUpdatedModalVisible(false);
     }
-
-    if (type === 'create') {
-      setIsCreatedModelVisible(false);
-    }
   };
 
   const handleDelete = (data: any) => {
-    handleBotsModelApi('delete', data);
+    handleProfileModelApi('delete', data);
   };
 
   const showConfirm = (record: any) => {
@@ -130,34 +131,16 @@ function BotTableComponent(props: IMyProps) {
     onChange: handlePageChange,
   };
 
-  const handleUpdate = (newUpdateData: any) => {
+  const handleUpdate = async (newUpdateData: any) => {
     if (!newUpdateData) return;
 
-    handleBotsModelApi('update', newUpdateData);
+    await handleProfileModelApi('update', newUpdateData);
 
     setIsUpdatedModalVisible(false);
   };
 
-  const handleCreate = (newData: any) => {
-    if (!newData) return;
-    handleBotsModelApi('create', newData);
-
-    setIsCreatedModelVisible(false);
-  };
-
   return (
     <div>
-      <div className={styles.addBtnContainer}>
-        <Button
-          type="primary"
-          shape="round"
-          icon={<UsergroupAddOutlined />}
-          size="large"
-          onClick={handleOpenCreatedForm}
-        >
-          Create a bot
-        </Button>
-      </div>
       <Table columns={columns} dataSource={data} pagination={paginationTable} />
       <Modal
         title="Bot Update Form"
@@ -168,25 +151,15 @@ function BotTableComponent(props: IMyProps) {
         footer={null}
       >
         {updatedData && (
-          <BotsUpdatedForm
+          <ProfileUpdatedForm
             updatedData={updatedData}
             handleUpdate={handleUpdate}
+            isLoadingUpdateProfile={isLoadingUpdateProfile}
           />
         )}
-      </Modal>
-
-      <Modal
-        title="Bot Creating Form"
-        visible={isCreatedModalVisible}
-        centered
-        onOk={() => handleCancel('create')}
-        onCancel={() => handleCancel('create')}
-        footer={null}
-      >
-        <BotsCreatedForm handleCreate={handleCreate} />
       </Modal>
     </div>
   );
 }
 
-export default BotTableComponent;
+export default ProfileTableComponent;
