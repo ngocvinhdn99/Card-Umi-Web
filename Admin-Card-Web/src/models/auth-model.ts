@@ -9,17 +9,16 @@ import { notification } from 'antd';
 import authApi from '@/services/auth-api';
 
 export interface AuthModelState {
-  userToken?: string;
+  adminToken?: string;
 }
 
 export interface AuthModelType {
   namespace: 'auth';
   state: AuthModelState;
   effects: {
-    login: Effect;
-    register: Effect;
-    handleTimeExpired: Effect;
+    adminLogin: Effect;
     logout: Effect;
+    handleTimeExpired: Effect;
   };
   reducers: {
     updateState: Reducer<AuthModelState>;
@@ -29,7 +28,7 @@ export interface AuthModelType {
 const AuthModel: AuthModelType = {
   namespace: 'auth',
   state: {
-    userToken: localStorage.getItem(STORAGE_KEYS.TOKEN) || '',
+    adminToken: localStorage.getItem(STORAGE_KEYS.TOKEN) || '',
   },
   reducers: {
     updateState(state, action) {
@@ -40,8 +39,8 @@ const AuthModel: AuthModelType = {
     },
   },
   effects: {
-    *login(action, { call, put, select }) {
-      const response = yield call(authApi.login, action.payload);
+    *adminLogin(action, { call, put, select }) {
+      const response = yield call(authApi.admin, action.payload);
       const { data, message } = response;
 
       if (data) {
@@ -55,38 +54,22 @@ const AuthModel: AuthModelType = {
           type: 'updateState',
           payload: {
             ...currentState,
-            userToken: data.token,
+            adminToken: data.token,
           },
         });
+
+        const newState = yield select((_: any) => _.auth);
 
         notification.success({
           placement: 'topRight',
           message: 'Login successfully',
         });
 
-        // yield put(routerRedux.push('/home'));
         history.push('/home');
       } else {
         notification.error({
           placement: 'topRight',
           message: 'Login is failed',
-          description: message,
-        });
-      }
-    },
-    *register(action, { call, put }) {
-      const response = yield call(authApi.register, action.payload);
-      const { data, message } = response;
-      const isRegisterSuccess = message === 'success';
-      if (isRegisterSuccess) {
-        notification.success({
-          placement: 'topRight',
-          message: 'Register successfully',
-        });
-      } else {
-        notification.error({
-          placement: 'topRight',
-          message: 'Register is failed',
           description: message,
         });
       }
@@ -99,7 +82,7 @@ const AuthModel: AuthModelType = {
         type: 'updateState',
         payload: {
           ...currentState,
-          userToken: '',
+          adminToken: '',
         },
       });
 
@@ -107,8 +90,6 @@ const AuthModel: AuthModelType = {
         placement: 'topRight',
         message: 'Log out successfully',
       });
-
-      history.push('/login');
     },
     *handleTimeExpired(action, { call, put, select }) {
       const currentState = yield select((_: any) => _.auth);
@@ -118,7 +99,7 @@ const AuthModel: AuthModelType = {
         type: 'updateState',
         payload: {
           ...currentState,
-          userToken: '',
+          adminToken: '',
         },
       });
 

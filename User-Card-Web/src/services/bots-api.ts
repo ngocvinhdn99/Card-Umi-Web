@@ -1,11 +1,11 @@
 import request from 'umi-request';
 import { STORAGE_KEYS } from '@/constants/index';
 
-const mainURL = 'http://localhost:1323/bots';
+const mainURL = 'http://localhost:1323/admin/bots';
 
 const handleGetListBotApi = async (payload: any) => {
-  console.log('payload', payload);
-  const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+  const { token, pagination } = payload;
+  const { page, limit } = pagination;
   try {
     const result = await request(`${mainURL}`, {
       method: 'get',
@@ -14,6 +14,10 @@ const handleGetListBotApi = async (payload: any) => {
             Authorization: `Bearer ${token}`,
           }
         : {},
+      params: {
+        page,
+        limit,
+      },
     });
     return result;
   } catch (error) {
@@ -22,9 +26,8 @@ const handleGetListBotApi = async (payload: any) => {
   }
 };
 
-const handleGetBotByIdApi = async (botId: any) => {
-  console.log('botId', botId);
-  const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+const handleGetBotByIdApi = async (payload: any) => {
+  const { botId, token } = payload;
   try {
     const result = await request(`${mainURL}/${botId}`, {
       method: 'get',

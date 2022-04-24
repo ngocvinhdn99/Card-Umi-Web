@@ -8,6 +8,7 @@ export default defineConfig({
     // { path: '/', component: '@/pages/index' },
     { path: '/', redirect: '/home', exact: true },
     { path: '/home', component: '@/pages/home/index', exact: true },
+    { path: '/login', component: '@/pages/login/index', exact: true },
   ],
   fastRefresh: {},
 });

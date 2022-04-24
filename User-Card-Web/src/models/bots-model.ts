@@ -7,15 +7,20 @@ import botsApi from '@/services/bots-api';
 interface BotInfo {
   id?: string;
   name?: string;
-  MinBet?: number;
-  MaxBet?: number;
+  minBet?: number;
+  maxBet?: number;
   totalPoints?: number;
   remainPoints?: number;
+}
+
+interface IPagination {
+  total?: number;
 }
 
 export interface BotsModelState {
   botInfo?: BotInfo;
   botList?: any;
+  pagination?: IPagination;
 }
 
 export interface BotModelType {
@@ -30,11 +35,12 @@ export interface BotModelType {
   };
 }
 
-const AuthModel: BotModelType = {
+const BotsModel: BotModelType = {
   namespace: 'bots',
   state: {
     botInfo: {},
     botList: [],
+    pagination: {},
   },
   reducers: {
     updateState(state, action) {
@@ -51,12 +57,16 @@ const AuthModel: BotModelType = {
 
       if (data) {
         const currentState = yield select((_: any) => _.bots);
+        const { list, paginationInfo } = data;
 
         yield put({
           type: 'updateState',
           payload: {
             ...currentState,
-            botList: data,
+            botList: list,
+            pagination: {
+              total: paginationInfo.total,
+            },
           },
         });
       } else {
@@ -68,7 +78,7 @@ const AuthModel: BotModelType = {
       }
     },
     *getBotById(action, { call, put, select }) {
-      const response = yield call(botsApi.getBotById, action.payload.botId);
+      const response = yield call(botsApi.getBotById, action.payload);
       const { data, message } = response;
 
       if (data) {
@@ -97,4 +107,4 @@ const AuthModel: BotModelType = {
   },
 };
 
-export default AuthModel;
+export default BotsModel;

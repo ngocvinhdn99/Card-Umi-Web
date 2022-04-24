@@ -4,26 +4,22 @@ import { STORAGE_KEYS } from '@/constants/index';
 import { notification } from 'antd';
 import gamesApi from '@/services/games-api';
 
-interface GameInfo {
-  ID?: string;
-  GameNo?: string;
-  PlayerID?: string;
-  BotID?: string;
-  WinnerID?: string;
-  PlayerHand?: any;
-  BotHand?: any;
-  BetValue?: number;
+interface IPagination {
+  total?: number;
+  page?: number;
+  limit?: number;
 }
 
 export interface GamesModelState {
-  gameInfo?: GameInfo;
+  gameList?: any;
+  pagination?: IPagination;
 }
 
 export interface GamesModelType {
   namespace: 'games';
   state: GamesModelState;
   effects: {
-    startGameByBotId: Effect;
+    handleGetAll: Effect;
   };
   reducers: {
     updateState: Reducer<GamesModelState>;
@@ -33,7 +29,8 @@ export interface GamesModelType {
 const GamesModel: GamesModelType = {
   namespace: 'games',
   state: {
-    gameInfo: {},
+    gameList: [],
+    pagination: {},
   },
   reducers: {
     updateState(state, action) {
@@ -44,18 +41,22 @@ const GamesModel: GamesModelType = {
     },
   },
   effects: {
-    *startGameByBotId(action, { call, put, select }) {
-      const response = yield call(gamesApi.startById, action.payload);
+    *handleGetAll(action, { call, put, select }) {
+      const response = yield call(gamesApi.getAll, action.payload);
       const { data, message } = response;
 
       if (data) {
         const currentState = yield select((_: any) => _.games);
+        const { list, paginationInfo } = data;
 
         yield put({
           type: 'updateState',
           payload: {
             ...currentState,
-            gameInfo: data,
+            gameList: list,
+            pagination: {
+              total: paginationInfo.total,
+            },
           },
         });
       } else {

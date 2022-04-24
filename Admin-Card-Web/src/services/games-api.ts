@@ -1,17 +1,14 @@
 import request from 'umi-request';
 import { STORAGE_KEYS } from '@/constants/index';
 
-const mainURL = 'http://localhost:1323/api/games';
+const mainURL = 'http://localhost:1323/admin/games';
 
-const handleStartGamesByBotIdApi = async (payload: any) => {
-  const { botId, betValue, token } = payload;
+const handleGetAllGamesByTokenApi = async (payload: any) => {
+  const { token } = payload;
 
   try {
-    const result = await request(`${mainURL}/${botId}`, {
-      method: 'post',
-      data: {
-        betValue,
-      },
+    const result = await request(`${mainURL}`, {
+      method: 'get',
       headers: token
         ? {
             Authorization: `Bearer ${token}`,
@@ -26,5 +23,5 @@ const handleStartGamesByBotIdApi = async (payload: any) => {
 };
 
 export default {
-  startById: handleStartGamesByBotIdApi,
+  getAll: handleGetAllGamesByTokenApi,
 };

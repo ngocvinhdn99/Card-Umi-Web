@@ -127,9 +127,6 @@ function TableComponent(props: any) {
   ];
 
   const handlePageChange = (page: any, limit: any) => {
-    console.log('page', page);
-    console.log('limit', limit);
-
     const newPagination = {
       ...pagination,
       page,
