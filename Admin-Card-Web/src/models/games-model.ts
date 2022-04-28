@@ -43,17 +43,17 @@ const GamesModel: GamesModelType = {
   effects: {
     *handleGetAll(action, { call, put, select }) {
       const response = yield call(gamesApi.getAll, action.payload);
-      const { data, message } = response;
+      const { data, message, paginationInfo } = response;
 
       if (data) {
         const currentState = yield select((_: any) => _.games);
-        const { list, paginationInfo } = data;
+        // const { list, paginationInfo } = data;
 
         yield put({
           type: 'updateState',
           payload: {
             ...currentState,
-            gameList: list,
+            gameList: data,
             pagination: {
               total: paginationInfo.total,
             },

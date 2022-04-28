@@ -1,6 +1,6 @@
 import { FolderOpenOutlined, RedoOutlined } from '@ant-design/icons';
-import { Image, Typography, Input, Button } from 'antd';
-import React, { useState, useRef } from 'react';
+import { Image, Typography, Input, Button, message } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from '../styles.less';
 import imageList from '@/configs/image';
 
@@ -11,11 +11,25 @@ interface IMyProps {
   statusList: any;
   point: any;
   handleStartGame: Function;
+  handleStartRamdomGames: Function;
+  botSelectType: string;
+  handlePreRamdomgames: Function;
+  winnerName: string;
 }
 
 function DividerComponent(props: IMyProps) {
-  const { setStatusList, statusList, point, handleStartGame } = props;
+  const {
+    setStatusList,
+    statusList,
+    point,
+    handleStartGame,
+    handleStartRamdomGames,
+    botSelectType,
+    handlePreRamdomgames,
+    winnerName,
+  } = props;
   const [bet, setBet] = useState(0);
+  const [gameCount, setGameCount] = useState(1);
 
   const { isRoll, isOpen } = statusList;
   const botImageRef = useRef(document.createElement('div'));
@@ -26,6 +40,7 @@ function DividerComponent(props: IMyProps) {
     textError: '',
     errorType: '',
   });
+  const isTypeBotSelect = botSelectType === 'botSelect';
 
   const handleResetError = () => {
     const notError = {
@@ -35,6 +50,12 @@ function DividerComponent(props: IMyProps) {
     };
     setIsError(notError);
   };
+
+  useEffect(() => {
+    if (isRoll && isOpen && winnerName) {
+      message.success(`Chúc mừng ${winnerName} đã chiến thắng game này`);
+    }
+  }, [statusList]);
 
   const handleChangeBetValue = (e: any) => {
     const valueNumber = Number(e.target.value);
@@ -49,20 +70,6 @@ function DividerComponent(props: IMyProps) {
       setIsError(newError);
       return;
     }
-
-    // const indexError = point.findIndex(
-    //   (value: any) => value.value < valueNumber,
-    // );
-    // if (indexError >= 0) {
-    //   const type = point[indexError].name;
-    //   const newError = {
-    //     status: true,
-    //     textError: `Vui lòng nhập số lượng bet nhỏ hơn point của ${type}`,
-    //     errorType: 'bet',
-    //   };
-    //   setIsError(newError);
-    //   return;
-    // }
 
     // Case bet Value > point of player || remainPoint of bot
     const indexError = point.findIndex((each: any) => each.point < valueNumber);
@@ -80,7 +87,7 @@ function DividerComponent(props: IMyProps) {
     // Case bet Value not include from min to max of bot
     const isValidMinMax =
       point[0].minBet <= valueNumber && point[0].maxBet >= valueNumber;
-    if (!isValidMinMax) {
+    if (!isValidMinMax && isTypeBotSelect) {
       const newError = {
         status: true,
         textError: `Vui lòng nhập giá trị bet chơi trong khoảng min-max của Bot`,
@@ -156,7 +163,11 @@ function DividerComponent(props: IMyProps) {
       }, 1000);
 
       // Call API
-      handleStartGame(bet);
+      if (isTypeBotSelect) {
+        handleStartGame(bet);
+      } else {
+        handleStartRamdomGames(bet);
+      }
     }
 
     setStatusList((prev: any) => ({
@@ -194,11 +205,24 @@ function DividerComponent(props: IMyProps) {
       isOpen: false,
     };
     setStatusList(defaultStatusList);
+
+    // Case ramdom bot
+    if (!isTypeBotSelect) {
+      handlePreRamdomgames();
+    }
+
+    // Set bet value default = 0
+    setBet(0);
+
+    // Plus game count
+    setGameCount((prev) => prev + 1);
   };
 
   return (
     <div className={styles.dividerRoot}>
-      <Title level={5}>Game no 1</Title>
+      <Title level={5} style={{ textAlign: 'center' }}>
+        Game {gameCount}
+      </Title>
       <div ref={botImageRef}>
         <Image src={imageList.imageBB} preview={false} />
       </div>
@@ -215,7 +239,9 @@ function DividerComponent(props: IMyProps) {
         <FolderOpenOutlined /> Open
       </div>
       <div>
-        <Title level={5}>Bet Quantity</Title>
+        <Title level={5} style={{ textAlign: 'center' }}>
+          Bet Quantity
+        </Title>
         <div className={styles.betContainer}>
           <Input
             disabled={isDisabledInput}

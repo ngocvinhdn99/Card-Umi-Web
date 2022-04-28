@@ -15,13 +15,14 @@ interface IMyProps {
   botList: any;
   handleBotsModelApi: Function;
   paginationModel: any;
+  handleGetAllApi: Function;
 }
 
 function BotTableComponent(props: IMyProps) {
-  const { botList, handleBotsModelApi, paginationModel } = props;
+  const { botList, handleBotsModelApi, paginationModel, handleGetAllApi } =
+    props;
   const [pagination, setPagination] = useState({
     page: 1,
-    total: 24,
     limit: 10,
   });
 
@@ -97,8 +98,17 @@ function BotTableComponent(props: IMyProps) {
     }
   };
 
+  const handleDefaultPagination = () => {
+    const defaultPagination = {
+      page: 1,
+      limit: 10,
+    };
+    setPagination(defaultPagination);
+  };
+
   const handleDelete = (data: any) => {
     handleBotsModelApi('delete', data);
+    handleDefaultPagination();
   };
 
   const showConfirm = (record: any) => {
@@ -124,6 +134,10 @@ function BotTableComponent(props: IMyProps) {
     setPagination(newPagination);
   };
 
+  useEffect(() => {
+    handleGetAllApi('bots', pagination);
+  }, [pagination]);
+
   const paginationTable = {
     current: pagination.page,
     total: paginationModel?.total,
@@ -134,6 +148,7 @@ function BotTableComponent(props: IMyProps) {
     if (!newUpdateData) return;
 
     handleBotsModelApi('update', newUpdateData);
+    handleDefaultPagination();
 
     setIsUpdatedModalVisible(false);
   };
@@ -141,6 +156,7 @@ function BotTableComponent(props: IMyProps) {
   const handleCreate = (newData: any) => {
     if (!newData) return;
     handleBotsModelApi('create', newData);
+    handleDefaultPagination();
 
     setIsCreatedModelVisible(false);
   };

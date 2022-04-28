@@ -45,12 +45,12 @@ const BotSelectComponent: React.FC<Props> = ({
   return (
     <div className={styles.botSelectRoot}>
       <div>
-        <Title level={3} className={styles.botSelectTitle} type="danger">
+        {/* <Title level={3} className={styles.botSelectTitle} type="danger">
           Chào mừng bạn đã đến với Poker Card Game
-        </Title>
-        <Title level={4} className={styles.botSelectSubTitle} type="warning">
+        </Title> */}
+        {/* <Title level={4} className={styles.botSelectSubTitle} type="warning">
           Vui lòng chọn Bot mà bạn mong muốn chơi !
-        </Title>
+        </Title> */}
       </div>
       <Row gutter={[16, 16]} className={styles.botSelectContainer}>
         {botList.map((value: any, key: any) => (

@@ -40,17 +40,17 @@ const ProfileModel: ProfileModelType = {
   effects: {
     *handleGetAll(action, { call, put, select }) {
       const response = yield call(profileApi.getAll, action.payload);
-      const { data, message } = response;
+      const { data, message, paginationInfo } = response;
 
       if (data) {
         const currentState = yield select((_: any) => _.profile);
-        const { list, paginationInfo } = data;
+        // const { list, paginationInfo } = data;
 
         yield put({
           type: 'updateState',
           payload: {
             ...currentState,
-            profileList: list,
+            profileList: data,
             pagination: {
               total: paginationInfo.total,
             },

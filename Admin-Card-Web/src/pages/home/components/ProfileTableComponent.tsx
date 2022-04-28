@@ -15,6 +15,7 @@ interface IMyProps {
   handleProfileModelApi: Function;
   paginationModel: any;
   isLoadingUpdateProfile: boolean;
+  handleGetAllApi: Function;
 }
 
 function ProfileTableComponent(props: IMyProps) {
@@ -23,10 +24,10 @@ function ProfileTableComponent(props: IMyProps) {
     handleProfileModelApi,
     paginationModel,
     isLoadingUpdateProfile,
+    handleGetAllApi,
   } = props;
   const [pagination, setPagination] = useState({
     page: 1,
-    total: 24,
     limit: 10,
   });
 
@@ -34,8 +35,9 @@ function ProfileTableComponent(props: IMyProps) {
 
   useEffect(() => {
     const dataResult = profileList.map((value: any, index: any) => ({
-      key: index,
       ...value,
+      key: index,
+      winRate: `${(value.winRate * 100).toFixed(2)}%`,
     }));
     setData(dataResult);
   }, [profileList]);
@@ -98,8 +100,17 @@ function ProfileTableComponent(props: IMyProps) {
     }
   };
 
+  const handleDefaultPagination = () => {
+    const defaultPagination = {
+      page: 1,
+      limit: 10,
+    };
+    setPagination(defaultPagination);
+  };
+
   const handleDelete = (data: any) => {
     handleProfileModelApi('delete', data);
+    handleDefaultPagination();
   };
 
   const showConfirm = (record: any) => {
@@ -125,6 +136,10 @@ function ProfileTableComponent(props: IMyProps) {
     setPagination(newPagination);
   };
 
+  useEffect(() => {
+    handleGetAllApi('profile', pagination);
+  }, [pagination]);
+
   const paginationTable = {
     current: pagination.page,
     total: paginationModel?.total,
@@ -135,6 +150,7 @@ function ProfileTableComponent(props: IMyProps) {
     if (!newUpdateData) return;
 
     await handleProfileModelApi('update', newUpdateData);
+    handleDefaultPagination();
 
     setIsUpdatedModalVisible(false);
   };

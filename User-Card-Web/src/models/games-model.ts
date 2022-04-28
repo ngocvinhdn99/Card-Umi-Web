@@ -17,6 +17,7 @@ interface GameInfo {
 
 export interface GamesModelState {
   gameInfo?: GameInfo;
+  recentGamesList?: any;
 }
 
 export interface GamesModelType {
@@ -24,6 +25,8 @@ export interface GamesModelType {
   state: GamesModelState;
   effects: {
     startGameByBotId: Effect;
+    startRamdomGame: Effect;
+    getRecentGames: Effect;
   };
   reducers: {
     updateState: Reducer<GamesModelState>;
@@ -34,6 +37,7 @@ const GamesModel: GamesModelType = {
   namespace: 'games',
   state: {
     gameInfo: {},
+    recentGamesList: [],
   },
   reducers: {
     updateState(state, action) {
@@ -62,6 +66,58 @@ const GamesModel: GamesModelType = {
         notification.error({
           placement: 'topRight',
           message: 'Start game failed',
+          description: message,
+        });
+      }
+    },
+    *startRamdomGame({ payload, callback }, { call, put, select }) {
+      const response = yield call(gamesApi.startRamdom, payload);
+      const { data, message } = response;
+      const currentState = yield select((_: any) => _.games);
+
+      if (data) {
+        callback?.(data.botID);
+
+        yield put({
+          type: 'updateState',
+          payload: {
+            ...currentState,
+            gameInfo: data,
+          },
+        });
+      } else {
+        yield put({
+          type: 'updateState',
+          payload: {
+            ...currentState,
+            gameInfo: {},
+          },
+        });
+
+        notification.error({
+          placement: 'topRight',
+          message: 'Start game failed',
+          description: message,
+        });
+      }
+    },
+    *getRecentGames({ payload }, { call, put, select }) {
+      const response = yield call(gamesApi.getRecentGames, payload);
+      const { data, message } = response;
+      const currentState = yield select((_: any) => _.games);
+
+      if (data) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            ...currentState,
+            recentGamesList: data,
+          },
+        });
+      } else {
+        notification.error({
+          placement: 'topRight',
+          message: 'Get recent game failed',
           description: message,
         });
       }

@@ -21,23 +21,35 @@ function UpdatedForm(props: IMyProps) {
   const schema = yup.object().shape({
     id: yup.string().min(1, 'Vui lòng nhập id'),
     key: yup.string().min(1, 'Vui lòng nhập key'),
-    name: yup.string().min(8, 'Vui lòng nhập tên hơn 8 ký tự'),
+    name: yup
+      .string()
+      .required('Vui lòng nhập thông tin của trường này')
+      .min(1, 'Vui lòng nhập thông tin của trường này')
+      .max(256, 'Trường này chỉ nhập được tối đa 256 ký tự'),
     totalPoints: yup
       .number()
       .typeError('Vui lòng nhập kiểu dữ liệu là số')
-      .min(1, 'Vui lòng nhập số lớn hơn 1'),
+      .required('Vui lòng nhập thông tin của trường này')
+      .min(1, 'Vui lòng nhập số lớn hơn hoặc bằng 1')
+      .max(10000, 'Trường này chỉ nhập tối đa con số 10,000'),
     remainPoints: yup
       .number()
       .typeError('Vui lòng nhập kiểu dữ liệu là số')
-      .min(1, 'Vui lòng nhập số lớn hơn 1'),
+      .required('Vui lòng nhập thông tin của trường này')
+      .min(1, 'Vui lòng nhập số lớn hơn hoặc bằng 1')
+      .max(10000, 'Trường này chỉ nhập tối đa con số 10,000'),
     minBet: yup
       .number()
       .typeError('Vui lòng nhập kiểu dữ liệu là số')
-      .min(1, 'Vui lòng nhập số lớn hơn 1'),
+      .required('Vui lòng nhập thông tin của trường này')
+      .min(1, 'Vui lòng nhập số lớn hơn hoặc bằng 1')
+      .max(10000, 'Trường này chỉ nhập tối đa con số 10,000'),
     maxBet: yup
       .number()
       .typeError('Vui lòng nhập kiểu dữ liệu là số')
-      .min(1, 'Vui lòng nhập số lớn hơn 1'),
+      .required('Vui lòng nhập thông tin của trường này')
+      .min(1, 'Vui lòng nhập số lớn hơn hoặc bằng 1')
+      .max(10000, 'Trường này chỉ nhập tối đa con số 10,000'),
   });
 
   const form = useForm({

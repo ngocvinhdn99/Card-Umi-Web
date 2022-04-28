@@ -11,28 +11,49 @@ interface IMyProps {
   botInfo: any;
   profileInfo: any;
   handleStartGame: Function;
+  handleStartRamdomGames: Function;
+  handlePreRamdomgames: Function;
   games: any;
+  botSelectType: string;
 }
 
 function HandingComponent(props: IMyProps) {
-  const { botInfo, profileInfo, handleStartGame, games } = props;
-  const { botHand, playerHand, botID, playerID, winnerID, betValue } =
-    games.gameInfo;
+  const {
+    botInfo,
+    profileInfo,
+    handleStartGame,
+    games,
+    botSelectType,
+    handleStartRamdomGames,
+    handlePreRamdomgames,
+  } = props;
+  const {
+    botHand,
+    playerHand,
+    botID,
+    playerID,
+    winnerID,
+    betValue,
+    winnerName,
+  } = games.gameInfo;
+  const { recentGamesList } = games;
 
-  let winnerType;
-  if (botID === winnerID) {
-    winnerType = 'bot';
-  }
-  if (botID === playerID) {
-    winnerType = 'player';
-  }
-
-  console.log('winnerType', winnerType);
+  // const [winnerType, setWinnerType] = useState('');
+  // useEffect(() => {
+  //   if (botID === winnerID) {
+  //     setWinnerType('bot');
+  //   }
+  //   if (playerID === winnerID) {
+  //     setWinnerType('player');
+  //   }
+  // }, [games]);
 
   const [statusList, setStatusList] = useState({
     isRoll: false,
     isOpen: false,
   });
+
+  const isValuesInBotInfo = Object.keys(botInfo).length;
 
   const [point, setPoint] = useState([
     {
@@ -40,7 +61,7 @@ function HandingComponent(props: IMyProps) {
       point: botInfo.remainPoints,
       minBet: botInfo.minBet,
       maxBet: botInfo.maxBet,
-      typeText: 'bot',
+      typeText: isValuesInBotInfo ? 'bot' : 'ramdomBot',
     },
     {
       name: profileInfo.name,
@@ -58,7 +79,7 @@ function HandingComponent(props: IMyProps) {
         point: botInfo.remainPoints,
         minBet: botInfo.minBet,
         maxBet: botInfo.maxBet,
-        typeText: 'bot',
+        typeText: isValuesInBotInfo ? 'bot' : 'ramdomBot',
       },
       {
         name: profileInfo.name,
@@ -69,9 +90,12 @@ function HandingComponent(props: IMyProps) {
       },
     ];
 
-    // Wait to click open -> set new point
+    // Wait to click open or pre ramdom games -> set new point
     const { isRoll, isOpen } = statusList;
-    if (isRoll && isOpen) {
+    const isValidSetPoint =
+      (isRoll && isOpen) ||
+      (!isRoll && !isOpen && botSelectType === 'ramdomBot');
+    if (isValidSetPoint) {
       setPoint(newPoint);
     }
   }, [botInfo, profileInfo, statusList]);
@@ -92,6 +116,10 @@ function HandingComponent(props: IMyProps) {
             statusList={statusList}
             point={point}
             handleStartGame={handleStartGame}
+            handleStartRamdomGames={handleStartRamdomGames}
+            handlePreRamdomgames={handlePreRamdomgames}
+            botSelectType={botSelectType}
+            winnerName={winnerName}
           />
         </Col>
         <Col span={10}>
@@ -99,6 +127,7 @@ function HandingComponent(props: IMyProps) {
             statusList={statusList}
             pointValue={point[1]}
             playerHand={playerHand}
+            recentGamesList={recentGamesList}
           />
         </Col>
       </Row>

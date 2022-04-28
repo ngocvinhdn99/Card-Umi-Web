@@ -20,7 +20,7 @@ function InputField(props: IMyProps) {
 
   return (
     <div>
-      <label htmlFor="" className="label">
+      <label htmlFor="" className={styles.label}>
         {name}
       </label>
       <Controller

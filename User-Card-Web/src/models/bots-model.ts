@@ -29,6 +29,7 @@ export interface BotModelType {
   effects: {
     getBotList: Effect;
     getBotById: Effect;
+    clearBotInfo: Effect;
   };
   reducers: {
     updateState: Reducer<BotsModelState>;
@@ -53,17 +54,17 @@ const BotsModel: BotModelType = {
   effects: {
     *getBotList(action, { call, put, select }) {
       const response = yield call(botsApi.getListBot, action.payload);
-      const { data, message } = response;
+      const { data, message, paginationInfo } = response;
 
       if (data) {
         const currentState = yield select((_: any) => _.bots);
-        const { list, paginationInfo } = data;
+        // const { list, paginationInfo } = data;
 
         yield put({
           type: 'updateState',
           payload: {
             ...currentState,
-            botList: list,
+            botList: data,
             pagination: {
               total: paginationInfo.total,
             },
@@ -80,6 +81,7 @@ const BotsModel: BotModelType = {
     *getBotById(action, { call, put, select }) {
       const response = yield call(botsApi.getBotById, action.payload);
       const { data, message } = response;
+      const { isHiddenNoti } = action.payload;
 
       if (data) {
         const currentState = yield select((_: any) => _.bots);
@@ -92,10 +94,12 @@ const BotsModel: BotModelType = {
           },
         });
 
-        notification.success({
-          placement: 'topRight',
-          message: 'Select bot successfully',
-        });
+        if (!isHiddenNoti) {
+          notification.success({
+            placement: 'topRight',
+            message: 'Select bot successfully',
+          });
+        }
       } else {
         notification.error({
           placement: 'topRight',
@@ -103,6 +107,16 @@ const BotsModel: BotModelType = {
           description: message,
         });
       }
+    },
+    *clearBotInfo(action, { call, put, select }) {
+      const currentState = yield select((_: any) => _.bots);
+      yield put({
+        type: 'updateState',
+        payload: {
+          ...currentState,
+          botInfo: {},
+        },
+      });
     },
   },
 };

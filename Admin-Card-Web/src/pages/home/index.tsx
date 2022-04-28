@@ -82,33 +82,33 @@ function HomeComponent({
     }
   };
 
-  const handleGetAllData = () => {
-    const validToken = handleTokenValid();
-    if (!validToken) return;
+  // const handleGetAllData = () => {
+  //   const validToken = handleTokenValid();
+  //   if (!validToken) return;
 
-    dispatch({
-      type: 'bots/handleGetAll',
-      payload: {
-        token: validToken,
-      },
-    });
-    dispatch({
-      type: 'profile/handleGetAll',
-      payload: {
-        token: validToken,
-      },
-    });
-    dispatch({
-      type: 'games/handleGetAll',
-      payload: {
-        token: validToken,
-      },
-    });
-  };
+  //   dispatch({
+  //     type: 'bots/handleGetAll',
+  //     payload: {
+  //       token: validToken,
+  //     },
+  //   });
+  //   dispatch({
+  //     type: 'profile/handleGetAll',
+  //     payload: {
+  //       token: validToken,
+  //     },
+  //   });
+  //   dispatch({
+  //     type: 'games/handleGetAll',
+  //     payload: {
+  //       token: validToken,
+  //     },
+  //   });
+  // };
 
-  useEffect(() => {
-    handleGetAllData();
-  }, []);
+  // useEffect(() => {
+  //   handleGetAllData();
+  // }, []);
 
   const handleChangeTab = (clickedTab: any) => {
     setTab(clickedTab);
@@ -175,6 +175,41 @@ function HomeComponent({
     }
   };
 
+  const handleGetAllApi = async (type: string, params: any) => {
+    const validToken = handleTokenValid();
+
+    if (!validToken) return;
+    switch (type) {
+      case 'bots':
+        dispatch({
+          type: 'bots/handleGetAll',
+          payload: {
+            token: validToken,
+            params,
+          },
+        });
+        break;
+      case 'profile':
+        dispatch({
+          type: 'profile/handleGetAll',
+          payload: {
+            token: validToken,
+            params,
+          },
+        });
+        break;
+      case 'games':
+        dispatch({
+          type: 'games/handleGetAll',
+          payload: {
+            token: validToken,
+            params,
+          },
+        });
+        break;
+    }
+  };
+
   const isLoadingUpdateProfile = !!loading.effects['profile/handleUpdate'];
 
   return (
@@ -214,15 +249,15 @@ function HomeComponent({
                 icon={<AppstoreOutlined />}
                 onClick={() => handleChangeTab('games')}
               >
-                Game
+                Games
               </Menu.Item>
-              <Menu.Item
+              {/* <Menu.Item
                 key="4"
                 icon={<TeamOutlined />}
                 onClick={() => handleChangeTab('player')}
               >
                 Player
-              </Menu.Item>
+              </Menu.Item> */}
             </Menu>
           </div>
 
@@ -258,6 +293,7 @@ function HomeComponent({
                 botList={botList}
                 handleBotsModelApi={handleBotsModelApi}
                 paginationModel={botsPagination}
+                handleGetAllApi={handleGetAllApi}
               />
             )}
             {tab === 'profile' && (
@@ -266,15 +302,17 @@ function HomeComponent({
                 handleProfileModelApi={handleProfileModelApi}
                 paginationModel={profilePagination}
                 isLoadingUpdateProfile={isLoadingUpdateProfile}
+                handleGetAllApi={handleGetAllApi}
               />
             )}
             {tab === 'games' && (
               <GameTableComponent
                 gameList={gameList}
                 paginationModel={gamesPagination}
+                handleGetAllApi={handleGetAllApi}
               />
             )}
-            {tab === 'player' && <PlayerTableComponent />}
+            {/* {tab === 'player' && <PlayerTableComponent />} */}
           </Content>
           <Footer style={{ textAlign: 'center' }}>
             Ant Design ©2018 Created by Ant UED
