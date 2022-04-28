@@ -67,30 +67,30 @@ const columns: any[] = [
     key: 'betValue',
     fixed: 'right',
   },
-  {
-    title: 'Action',
-    key: 'action',
-    fixed: 'right',
+  // {
+  //   title: 'Action',
+  //   key: 'action',
+  //   fixed: 'right',
 
-    render: (text: string, record: any) => (
-      <Space size="middle">
-        <a>Update</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
+  //   render: (text: string, record: any) => (
+  //     <Space size="middle">
+  //       <a>Update</a>
+  //       <a>Delete</a>
+  //     </Space>
+  //   ),
+  // },
 ];
 
 interface IMyProps {
   gameList: any;
   paginationModel: any;
+  handleGetAllApi: any;
 }
 
 function GameTableComponent(props: IMyProps) {
-  const { gameList, paginationModel } = props;
+  const { gameList, paginationModel, handleGetAllApi } = props;
   const [pagination, setPagination] = useState({
     page: 1,
-    total: 24,
     limit: 10,
   });
 
@@ -243,7 +243,7 @@ function GameTableComponent(props: IMyProps) {
 
   const [data, setData] = useState([]);
   useEffect(() => {
-    const gameRenderList = gameList?.map((each: any) => {
+    const gameRenderList = gameList?.map((each: any, index: number) => {
       let playerHandName = each.playerHand.cards.map((x: any) => x.name);
       playerHandName = playerHandName.join(', ');
 
@@ -268,6 +268,7 @@ function GameTableComponent(props: IMyProps) {
         playerHandRank,
         botHandName,
         botHandRank,
+        key: index,
       };
     });
 
@@ -283,10 +284,14 @@ function GameTableComponent(props: IMyProps) {
     setPagination(newPagination);
   };
 
+  useEffect(() => {
+    handleGetAllApi('games', pagination);
+  }, [pagination]);
+
   const paginationTable = {
     current: pagination.page,
-    // total: paginationModel.total,
-    total: 77,
+    total: paginationModel?.total,
+    // total: 77,
     onChange: handlePageChange,
   };
 

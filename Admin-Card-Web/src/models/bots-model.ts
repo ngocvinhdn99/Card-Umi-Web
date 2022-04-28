@@ -51,18 +51,18 @@ const BotsModel: BotModelType = {
   effects: {
     *handleGetAll(action, { call, put, select }) {
       const response = yield call(botsApi.getAll, action.payload);
-      const { data, message } = response;
+      const { data, message, paginationInfo } = response;
 
       if (data) {
         const currentState = yield select((_: any) => _.bots);
 
-        const { paginationInfo, list } = data;
+        // const { paginationInfo, list } = data;
 
         yield put({
           type: 'updateState',
           payload: {
             ...currentState,
-            botList: list,
+            botList: data,
             pagination: {
               total: paginationInfo.total,
             },

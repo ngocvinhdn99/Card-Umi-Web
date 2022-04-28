@@ -1,11 +1,10 @@
 import request from 'umi-request';
 import { STORAGE_KEYS } from '@/constants/index';
 
-const mainURL = 'http://localhost:1323/admin/players';
-const mainURL2 = 'http://localhost:1323/admin/profiles';
+const mainURL = 'http://localhost:1323/admin/profiles';
 
 const handleGetListProfileApi = async (payload: any) => {
-  const { token } = payload;
+  const { token, params } = payload;
   try {
     const result = await request(`${mainURL}`, {
       method: 'get',
@@ -14,6 +13,7 @@ const handleGetListProfileApi = async (payload: any) => {
             Authorization: `Bearer ${token}`,
           }
         : {},
+      params,
     });
     return result;
   } catch (error) {
@@ -43,7 +43,7 @@ const handleGetProfileByIdApi = async (profileId: any) => {
 const handleUpdateProfileByIdApi = async (payload: any) => {
   const { data, token } = payload;
   try {
-    const result = await request(`${mainURL2}/${data.id}`, {
+    const result = await request(`${mainURL}/${data.id}`, {
       method: 'put',
       data,
       headers: token
@@ -63,7 +63,7 @@ const handleDeleteProfileByIdApi = async (payload: any) => {
   const { data, token } = payload;
   const { id: profileId } = data;
   try {
-    const result = await request(`${mainURL2}/${profileId}`, {
+    const result = await request(`${mainURL}/${profileId}`, {
       method: 'delete',
       headers: token
         ? {

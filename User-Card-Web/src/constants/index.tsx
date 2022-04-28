@@ -27,4 +27,4 @@ export const useTokenCheck = (tokenInfo: any) => {
   }
 };
 
-export const expirationTimeByMinutes = 1 * 60 * 1000;
+export const expirationTimeByMinutes = 60 * 60 * 1000;

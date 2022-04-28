@@ -4,7 +4,7 @@ import { STORAGE_KEYS } from '@/constants/index';
 const mainURL = 'http://localhost:1323/admin/bots';
 
 const handleGetListBotApi = async (payload: any) => {
-  const { token } = payload;
+  const { token, params } = payload;
   try {
     const result = await request(`${mainURL}`, {
       method: 'get',
@@ -13,6 +13,7 @@ const handleGetListBotApi = async (payload: any) => {
             Authorization: `Bearer ${token}`,
           }
         : {},
+      params,
     });
     return result;
   } catch (error) {

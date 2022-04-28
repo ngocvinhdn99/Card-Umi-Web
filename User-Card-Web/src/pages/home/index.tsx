@@ -5,12 +5,14 @@ import HandingComponent from './components/HandingComponent';
 import BotSelectComponent from './components/BotSelectComponent';
 import { STORAGE_KEYS, useTokenCheck } from '@/constants/index';
 import { Redirect } from 'umi';
-import { Menu, Dropdown, Button, notification } from 'antd';
+import { Menu, Dropdown, Button, notification, Typography } from 'antd';
 import {
   DownOutlined,
   UserOutlined,
   LogoutOutlined,
   UserSwitchOutlined,
+  RobotOutlined,
+  RobotFilled,
 } from '@ant-design/icons';
 import {
   Dispatch,
@@ -30,6 +32,7 @@ interface Props {
   games: GamesModelState;
   auth: any;
 }
+const { Title } = Typography;
 
 const HomeComponent: React.FC<Props> = ({
   bots,
@@ -43,6 +46,7 @@ const HomeComponent: React.FC<Props> = ({
   const { profileInfo } = profile;
   const idBot = botInfo?.id;
 
+  const [botSelectType, setBotSelectType] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 8,
@@ -75,12 +79,8 @@ const HomeComponent: React.FC<Props> = ({
     if (!isRun) return;
 
     handleGetProfileByToken();
+    handleGetRecentGames();
   }, []);
-
-  // const isTokenValid = handleTokenValid();
-  // if (!isTokenValid) {
-  //   return <Redirect to="/login" />;
-  // }
 
   const handleNewPagination = (newPage: number) => {
     const newPagination = {
@@ -100,7 +100,8 @@ const HomeComponent: React.FC<Props> = ({
             history.push('/account');
           }}
         >
-          <UserSwitchOutlined /> Account
+          <UserSwitchOutlined />
+          <span style={{ marginLeft: '32px' }}>Account</span>
         </a>
       </Menu.Item>
       <Menu.Item>
@@ -113,7 +114,8 @@ const HomeComponent: React.FC<Props> = ({
             });
           }}
         >
-          <LogoutOutlined /> Log out
+          <LogoutOutlined />
+          <span style={{ marginLeft: '32px' }}>Log out</span>
         </a>
       </Menu.Item>
     </Menu>
@@ -134,9 +136,20 @@ const HomeComponent: React.FC<Props> = ({
     }
   };
 
-  // useEffect(() => {
-  //   handleGetProfileByToken();
-  // }, []);
+  const handleGetRecentGames = () => {
+    const tokenValid = handleTokenValid();
+    if (tokenValid) {
+      dispatch({
+        type: 'games/getRecentGames',
+        payload: {
+          token: tokenValid,
+        },
+      });
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   useEffect(() => {
     // no handleTokenvalid -> just only give token, not handle dva noti
@@ -154,7 +167,7 @@ const HomeComponent: React.FC<Props> = ({
     }
   }, [pagination]);
 
-  const handleGetBotById = (botId: any) => {
+  const handleGetBotById = (botId: any, isHiddenNoti: boolean) => {
     const isTokenValid = handleTokenValid();
     if (isTokenValid) {
       dispatch({
@@ -162,6 +175,7 @@ const HomeComponent: React.FC<Props> = ({
         payload: {
           botId,
           token: isTokenValid,
+          isHiddenNoti,
         },
       });
       return true;
@@ -190,7 +204,8 @@ const HomeComponent: React.FC<Props> = ({
       return handleRedirect();
     }
 
-    const isRunGetBot = await handleGetBotById(botId);
+    const isHiddenNoti = true;
+    const isRunGetBot = await handleGetBotById(botId, isHiddenNoti);
     if (!isRunGetBot) {
       return handleRedirect();
     }
@@ -199,13 +214,55 @@ const HomeComponent: React.FC<Props> = ({
     if (!isRunGetProfile) {
       return handleRedirect();
     }
-    // await dispatch({
-    //   type: 'games/startGameByBotId',
-    //   payload: {
-    //     betValue,
-    //     botId,
-    //   },
-    // });
+
+    await handleGetRecentGames();
+  };
+
+  const handleGetBotByIdCallBack = (botId: any) => {
+    const tokenValid = handleTokenValid();
+    if (tokenValid) {
+      dispatch({
+        type: 'bots/getBotById',
+        payload: {
+          botId,
+          token: tokenValid,
+          isHiddenNoti: true,
+        },
+      });
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const handleStartRamdomGames = async (betValue: number) => {
+    const tokenValid = handleTokenValid();
+    const handleRedirect = () => {
+      history.push('/login');
+    };
+
+    if (!tokenValid) return;
+    await dispatch({
+      type: 'games/startRamdomGame',
+      payload: {
+        betValue,
+        token: tokenValid,
+      },
+      callback: handleGetBotByIdCallBack,
+    });
+
+    const isRunGetProfile = handleGetProfileByToken();
+    if (!isRunGetProfile) {
+      return handleRedirect();
+    }
+
+    handleGetRecentGames();
+  };
+
+  const handlePreRamdomgames = () => {
+    dispatch({
+      type: 'bots/clearBotInfo',
+    });
   };
 
   return (
@@ -213,26 +270,90 @@ const HomeComponent: React.FC<Props> = ({
       <div className={styles.container}>
         <Dropdown overlay={menu} placement="bottomRight">
           <Button className={styles.accountBtn}>
-            <UserOutlined /> Huynh Ngoc Vinh <DownOutlined />
+            <UserOutlined /> {profileInfo?.name} <DownOutlined />
           </Button>
         </Dropdown>
 
-        {!idBot && (
-          <BotSelectComponent
-            botList={botList}
-            handleGetBotById={handleGetBotById}
-            pagination={pagination}
-            botsPagination={botsPagination}
-            handleNewPagination={handleNewPagination}
-          />
+        {!(idBot || botSelectType === 'ramdomBot') && (
+          <div>
+            <Title level={3} className={styles.botSelectTitle} type="danger">
+              Chào mừng bạn đã đến với Poker Card Game
+            </Title>
+            {!botSelectType && (
+              <Title
+                level={4}
+                className={styles.botSelectSubTitle}
+                type="warning"
+              >
+                Vui lòng chọn chế độ mà bạn mong muốn chơi với Bot !
+              </Title>
+            )}
+            {botSelectType === 'botSelect' && (
+              <Title
+                level={4}
+                className={styles.botSelectSubTitle}
+                type="warning"
+              >
+                Vui lòng chọn Bot mà bạn muốn chơi trong danh sách này !
+              </Title>
+            )}
+          </div>
         )}
 
-        {idBot && (
+        {botSelectType !== 'botRamdom' && (
+          // {!idBot && botSelectType !== 'botRamdom' && (
+          // <div>abc</div>
+          <div className={styles.selectBtnContainer}>
+            {!idBot && !botSelectType && (
+              <div className={styles.selectBtnWrapper}>
+                <Button
+                  type="primary"
+                  shape="round"
+                  icon={<RobotOutlined />}
+                  size="large"
+                  onClick={() => {
+                    setBotSelectType('botSelect');
+                  }}
+                >
+                  Chọn Bot chơi
+                </Button>
+
+                <Button
+                  type="primary"
+                  shape="round"
+                  icon={<RobotFilled />}
+                  size="large"
+                  danger
+                  onClick={() => {
+                    setBotSelectType('ramdomBot');
+                  }}
+                >
+                  Chọn ngẫu nhiên Bot
+                </Button>
+              </div>
+            )}
+
+            {!idBot && botSelectType === 'botSelect' && (
+              <BotSelectComponent
+                botList={botList}
+                handleGetBotById={handleGetBotById}
+                pagination={pagination}
+                botsPagination={botsPagination}
+                handleNewPagination={handleNewPagination}
+              />
+            )}
+          </div>
+        )}
+
+        {(idBot || botSelectType === 'ramdomBot') && (
           <HandingComponent
             botInfo={botInfo}
             profileInfo={profileInfo}
             handleStartGame={handleStartGame}
+            handleStartRamdomGames={handleStartRamdomGames}
+            handlePreRamdomgames={handlePreRamdomgames}
             games={games}
+            botSelectType={botSelectType}
           />
         )}
       </div>

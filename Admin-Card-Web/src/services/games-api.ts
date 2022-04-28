@@ -4,7 +4,7 @@ import { STORAGE_KEYS } from '@/constants/index';
 const mainURL = 'http://localhost:1323/admin/games';
 
 const handleGetAllGamesByTokenApi = async (payload: any) => {
-  const { token } = payload;
+  const { token, params } = payload;
 
   try {
     const result = await request(`${mainURL}`, {
@@ -14,6 +14,7 @@ const handleGetAllGamesByTokenApi = async (payload: any) => {
             Authorization: `Bearer ${token}`,
           }
         : {},
+      params,
     });
     return result;
   } catch (error) {

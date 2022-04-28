@@ -66,11 +66,12 @@ function LoginForm(props: IMyProps) {
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <InputField form={form} name="email" />
         <InputField form={form} name="password" />
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+
+        <div className={styles.submitBtnContainer}>
           <Button type="primary" htmlType="submit" loading={isLoading}>
             Submit
           </Button>
-        </Form.Item>
+        </div>
       </form>
     </div>
   );

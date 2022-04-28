@@ -14,9 +14,34 @@ interface IMyProps {
 }
 
 function BotHandComponent(props: IMyProps) {
-  const { statusList, pointValue, botHand } = props;
+  let { statusList, pointValue, botHand } = props;
+  const [botValues, setBotValues] = useState(pointValue);
+
+  const handlePointValue = () => {
+    if (pointValue.typeText === 'ramdomBot') {
+      const ramdomBotValues = {
+        name: 'Ramdom Bot',
+        point: '???',
+        minBet: '???',
+        maxBet: '???',
+        typeText: 'ramdomBot',
+      };
+      setBotValues(ramdomBotValues);
+    } else {
+      setBotValues({
+        ...pointValue,
+      });
+    }
+  };
+
+  // console.log('pointValue', pointValue);
+
+  useEffect(() => {
+    handlePointValue();
+  }, [pointValue]);
+
   const { isRoll, isOpen } = statusList;
-  const { name, point, minBet, maxBet } = pointValue;
+  const { name, point, minBet, maxBet } = botValues;
   const [imgBackSrc, setImgBackSrc] = useState({
     first: imageList.imageRB,
     second: imageList.imageRB,
@@ -43,17 +68,26 @@ function BotHandComponent(props: IMyProps) {
   const imageRef3 = useRef(document.createElement('div'));
 
   const handleCardsData = () => {
-    const { cards } = botHand;
-    const firstCard = `card${cards[0].name}${cards[0].suit}`;
-    const secondCard = `card${cards[1].name}${cards[1].suit}`;
-    const thirdCard = `card${cards[2].name}${cards[2].suit}`;
+    if (botHand) {
+      const { cards } = botHand;
+      const firstCard = `card${cards[0].name}${cards[0].suit}`;
+      const secondCard = `card${cards[1].name}${cards[1].suit}`;
+      const thirdCard = `card${cards[2].name}${cards[2].suit}`;
 
-    const newImgBackSrc = {
-      first: imageList[firstCard],
-      second: imageList[secondCard],
-      third: imageList[thirdCard],
-    };
-    return newImgBackSrc;
+      const newImgBackSrc = {
+        first: imageList[firstCard],
+        second: imageList[secondCard],
+        third: imageList[thirdCard],
+      };
+      return newImgBackSrc;
+    } else {
+      const oldImgBackSrc = {
+        first: imageList.imageRB,
+        second: imageList.imageRB,
+        third: imageList.imageRB,
+      };
+      return oldImgBackSrc;
+    }
   };
 
   useEffect(() => {
@@ -108,21 +142,11 @@ function BotHandComponent(props: IMyProps) {
     });
   };
 
-  // useEffect(() => {
-  //   // When click open -> rotate card
-  //   if (isRoll && isOpen) {
-  //     handleRotateCard();
-  //   }
-
-  //   // When click open -> rotate card
-  //   if (!isRoll && !isOpen) {
-  //     handleRotateCard();
-  //   }
-  // }, [statusList]);
-
   return (
     <div className={styles.handRoot}>
-      <Title level={5}>{name}</Title>
+      <Title level={5} style={{ textAlign: 'center' }}>
+        {name}
+      </Title>
       <div>
         <Row gutter={[8, 8]}>
           <Col span={8} className={styles.testAnimation} ref={imageRef1}>

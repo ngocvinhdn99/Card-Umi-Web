@@ -16,17 +16,30 @@ function InputField(props: IMyProps) {
   const hasError = !!errors[name];
 
   const errorMessage = errors[name]?.message;
-  const isPassWordField = name === 'password';
+  // const isPassWordField = name === 'password';
+  const disabledNameList = ['password', 'newPassword', 'retypeNewPassword'];
+
+  const labelList: any = {
+    name: 'Name',
+    email: 'Email',
+    newPassword: 'Mật khẩu mới',
+    retypeNewPassword: 'Nhập lại mật khẩu mới',
+  };
 
   return (
     <div>
-      <label htmlFor="" className="label">
-        {name}
+      <label
+        htmlFor=""
+        className={name === 'password' ? styles.typeTitle : styles.label}
+      >
+        {name === 'password'
+          ? 'Vui lòng nhập mật khẩu hiện tại'
+          : labelList[name]}
       </label>
       <Controller
         name={name}
         control={form.control}
-        as={isPassWordField ? Input.Password : Input}
+        as={disabledNameList.includes(name) ? Input.Password : Input}
       />
       {hasError && <span className={styles.error}>{errorMessage}</span>}
     </div>

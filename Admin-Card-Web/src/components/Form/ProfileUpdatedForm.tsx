@@ -22,15 +22,22 @@ function UpdatedForm(props: IMyProps) {
   const schema = yup.object().shape({
     id: yup.string().min(1, 'Vui lòng nhập id'),
     key: yup.string().min(1, 'Vui lòng nhập key'),
-    name: yup.string().min(8, 'Vui lòng nhập tên hơn 8 ký tự'),
+    name: yup
+      .string()
+      .required('Vui lòng nhập thông tin của trường này')
+      .min(3, 'Vui lòng nhập thông tin của trường này ít nhất 3 ký tự')
+      .max(256, 'Trường này chỉ nhập được tối đa 256 ký tự'),
     email: yup
       .string()
       .email('Vui lòng nhập email hợp lệ')
-      .min(1, 'Vui lòng nhập email'),
+      .required('Vui lòng nhập thông tin của trường này')
+      .min(8, 'Vui lòng nhập thông tin của trường này ít nhất 8 ký tự')
+      .max(256, 'Trường này chỉ nhập được tối đa 256 ký tự'),
     point: yup
       .number()
       .typeError('Vui lòng nhập kiểu dữ liệu là số')
-      .min(0, 'Vui lòng nhập point hơn 0'),
+      .min(1, 'Vui lòng nhập point hơn 1')
+      .max(10000, 'Vui lòng nhập point nhỏ hơn 10,000'),
     totalGame: yup
       .number()
       .typeError('Vui lòng nhập kiểu dữ liệu là số')

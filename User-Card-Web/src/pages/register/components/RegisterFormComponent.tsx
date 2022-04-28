@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import RegisterForm from './RegisterForm';
+import styles from '../index.less';
 
 RegisterFormComponent.propTypes = {};
 interface IMyProps {
@@ -14,7 +15,7 @@ function RegisterFormComponent(props: IMyProps) {
   return (
     <div>
       <h2>Chào mừng bạn đến với Card Poker Game</h2>
-      <h6>Đăng ký</h6>
+      <h6 className={styles.typeTitle}>Đăng ký</h6>
       <RegisterForm handleUserInfo={handleUserInfo} isLoading={isLoading} />
     </div>
   );
