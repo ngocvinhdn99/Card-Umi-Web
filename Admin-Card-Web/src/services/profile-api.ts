@@ -1,7 +1,8 @@
 import request from 'umi-request';
-import { STORAGE_KEYS } from '@/constants/index';
+import { STORAGE_KEYS, API_MAIN_URL } from '@/constants/index';
 
-const mainURL = 'http://localhost:1323/admin/profiles';
+const mainURL = `${API_MAIN_URL}/admin/profiles`;
+// const mainURL = 'http://localhost:1323/admin/profiles';
 
 const handleGetListProfileApi = async (payload: any) => {
   const { token, params } = payload;
