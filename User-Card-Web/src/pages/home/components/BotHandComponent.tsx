@@ -116,6 +116,19 @@ function BotHandComponent(props: IMyProps) {
       }, 1000);
     }
 
+    // // When click open
+    // if (isRoll && isOpen) {
+    //   handleRotateCard();
+
+    //   setTimeout(() => {
+    //     // setImgBackSrc(imageList.imageAH);
+    //     const newCardImg = handleCardsData();
+    //     setImgBackSrc(newCardImg);
+    //   }, 300);
+    // }
+  }, [statusList]);
+
+  const handleOpenCard = () => {
     // When click open
     if (isRoll && isOpen) {
       handleRotateCard();
@@ -126,7 +139,11 @@ function BotHandComponent(props: IMyProps) {
         setImgBackSrc(newCardImg);
       }, 300);
     }
-  }, [statusList]);
+  };
+
+  useEffect(() => {
+    handleOpenCard();
+  }, [statusList, botHand]);
 
   const handleRotateCard = () => {
     imageRef1.current?.animate([{ transform: 'rotate(0deg) scaleX(-1)' }], {

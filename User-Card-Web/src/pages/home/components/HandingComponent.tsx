@@ -27,26 +27,9 @@ function HandingComponent(props: IMyProps) {
     handleStartRamdomGames,
     handlePreRamdomgames,
   } = props;
-  const {
-    botHand,
-    playerHand,
-    botID,
-    playerID,
-    winnerID,
-    betValue,
-    winnerName,
-  } = games.gameInfo;
-  const { recentGamesList } = games;
 
-  // const [winnerType, setWinnerType] = useState('');
-  // useEffect(() => {
-  //   if (botID === winnerID) {
-  //     setWinnerType('bot');
-  //   }
-  //   if (playerID === winnerID) {
-  //     setWinnerType('player');
-  //   }
-  // }, [games]);
+  const { botHand, playerHand } = games.gameInfo;
+  const { recentGamesList } = games;
 
   const [statusList, setStatusList] = useState({
     isRoll: false,
@@ -119,7 +102,7 @@ function HandingComponent(props: IMyProps) {
             handleStartRamdomGames={handleStartRamdomGames}
             handlePreRamdomgames={handlePreRamdomgames}
             botSelectType={botSelectType}
-            winnerName={winnerName}
+            games={games}
           />
         </Col>
         <Col span={10}>

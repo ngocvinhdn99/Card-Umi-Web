@@ -82,45 +82,17 @@ function HomeComponent({
     }
   };
 
-  // const handleGetAllData = () => {
-  //   const validToken = handleTokenValid();
-  //   if (!validToken) return;
-
-  //   dispatch({
-  //     type: 'bots/handleGetAll',
-  //     payload: {
-  //       token: validToken,
-  //     },
-  //   });
-  //   dispatch({
-  //     type: 'profile/handleGetAll',
-  //     payload: {
-  //       token: validToken,
-  //     },
-  //   });
-  //   dispatch({
-  //     type: 'games/handleGetAll',
-  //     payload: {
-  //       token: validToken,
-  //     },
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   handleGetAllData();
-  // }, []);
-
   const handleChangeTab = (clickedTab: any) => {
     setTab(clickedTab);
   };
 
-  const handleBotsModelApi = (type: string, data: any) => {
+  const handleBotsModelApi = async (type: string, data: any) => {
     const validToken = handleTokenValid();
 
     if (!validToken) return;
     switch (type) {
       case 'create':
-        dispatch({
+        await dispatch({
           type: 'bots/handleCreate',
           payload: {
             data,
@@ -129,7 +101,7 @@ function HomeComponent({
         });
         break;
       case 'update':
-        dispatch({
+        await dispatch({
           type: 'bots/handleUpdate',
           payload: {
             data,
@@ -138,7 +110,7 @@ function HomeComponent({
         });
         break;
       case 'delete':
-        dispatch({
+        await dispatch({
           type: 'bots/handleDelete',
           payload: {
             data,
@@ -210,8 +182,6 @@ function HomeComponent({
     }
   };
 
-  const isLoadingUpdateProfile = !!loading.effects['profile/handleUpdate'];
-
   return (
     <div>
       <Layout hasSider>
@@ -251,13 +221,6 @@ function HomeComponent({
               >
                 Games
               </Menu.Item>
-              {/* <Menu.Item
-                key="4"
-                icon={<TeamOutlined />}
-                onClick={() => handleChangeTab('player')}
-              >
-                Player
-              </Menu.Item> */}
             </Menu>
           </div>
 
@@ -267,7 +230,6 @@ function HomeComponent({
               icon={<PoweroffOutlined />}
               danger
               style={{ width: '100%' }}
-              // loading={loadings[1]}
               onClick={() => {
                 dispatch({
                   type: 'auth/logout',
@@ -294,6 +256,7 @@ function HomeComponent({
                 handleBotsModelApi={handleBotsModelApi}
                 paginationModel={botsPagination}
                 handleGetAllApi={handleGetAllApi}
+                loading={loading}
               />
             )}
             {tab === 'profile' && (
@@ -301,7 +264,7 @@ function HomeComponent({
                 profileList={profileList}
                 handleProfileModelApi={handleProfileModelApi}
                 paginationModel={profilePagination}
-                isLoadingUpdateProfile={isLoadingUpdateProfile}
+                loading={loading}
                 handleGetAllApi={handleGetAllApi}
               />
             )}
@@ -310,9 +273,9 @@ function HomeComponent({
                 gameList={gameList}
                 paginationModel={gamesPagination}
                 handleGetAllApi={handleGetAllApi}
+                loading={loading}
               />
             )}
-            {/* {tab === 'player' && <PlayerTableComponent />} */}
           </Content>
           <Footer style={{ textAlign: 'center' }}>
             Ant Design ©2018 Created by Ant UED

@@ -13,10 +13,11 @@ UpdatedForm.propTypes = {};
 interface IMyProps {
   updatedData: any;
   handleUpdate: any;
+  loading: any;
 }
 
 function UpdatedForm(props: IMyProps) {
-  const { updatedData, handleUpdate } = props;
+  const { updatedData, handleUpdate, loading } = props;
 
   const schema = yup.object().shape({
     id: yup.string().min(1, 'Vui lòng nhập id'),
@@ -80,7 +81,12 @@ function UpdatedForm(props: IMyProps) {
         <InputField form={form} name="remainPoints" />
         <InputField form={form} name="minBet" />
         <InputField form={form} name="maxBet" />
-        <Button type="primary" htmlType="submit" className={styles.submitBtn}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          className={styles.submitBtn}
+          loading={loading.effects['bots/handleUpdate']}
+        >
           Submit
         </Button>
       </form>

@@ -12,10 +12,11 @@ BotsCreatedForm.propTypes = {};
 
 interface IMyProps {
   handleCreate: any;
+  loading: any;
 }
 
 function BotsCreatedForm(props: IMyProps) {
-  const { handleCreate } = props;
+  const { handleCreate, loading } = props;
 
   const schema = yup.object().shape({
     name: yup
@@ -67,7 +68,12 @@ function BotsCreatedForm(props: IMyProps) {
         <InputField form={form} name="totalPoints" />
         <InputField form={form} name="minBet" />
         <InputField form={form} name="maxBet" />
-        <Button type="primary" htmlType="submit" className={styles.submitBtn}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          className={styles.submitBtn}
+          loading={loading.effects['bots/handleCreate']}
+        >
           Submit
         </Button>
       </form>

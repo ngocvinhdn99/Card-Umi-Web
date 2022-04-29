@@ -103,6 +103,19 @@ function PlayerHandComponent(props: IMyProps) {
       }, 2000);
     }
 
+    // // When click open
+    // if (isRoll && isOpen) {
+    //   handleRotateCard();
+
+    //   setTimeout(() => {
+    //     // setImgBackSrc(imageList.imageAH);
+    //     const newCardImg = handleCardsData();
+    //     setImgBackSrc(newCardImg);
+    //   }, 300);
+    // }
+  }, [statusList]);
+
+  const handleOpenCard = () => {
     // When click open
     if (isRoll && isOpen) {
       handleRotateCard();
@@ -113,7 +126,11 @@ function PlayerHandComponent(props: IMyProps) {
         setImgBackSrc(newCardImg);
       }, 300);
     }
-  }, [statusList]);
+  };
+
+  useEffect(() => {
+    handleOpenCard();
+  }, [statusList, playerHand]);
 
   const handleRotateCard = () => {
     imageRef1.current?.animate([{ transform: 'rotate(0deg) scaleX(-1)' }], {
