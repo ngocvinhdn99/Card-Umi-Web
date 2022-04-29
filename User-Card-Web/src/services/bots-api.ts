@@ -1,7 +1,9 @@
 import request from 'umi-request';
-import { STORAGE_KEYS } from '@/constants/index';
+import { STORAGE_KEYS, API_MAIN_URL } from '@/constants/index';
 
-const mainURL = 'http://localhost:1323/admin/bots';
+const mainURL = `${API_MAIN_URL}/admin/bots`;
+
+// const mainURL = 'http://localhost:1323/admin/bots';
 
 const handleGetListBotApi = async (payload: any) => {
   const { token, pagination } = payload;

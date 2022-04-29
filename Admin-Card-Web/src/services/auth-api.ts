@@ -1,6 +1,8 @@
 import request from 'umi-request';
+import { API_MAIN_URL } from '@/constants/index';
 
-const mainURL = 'http://localhost:1323/admin';
+const mainURL = `${API_MAIN_URL}/admin`;
+// const mainURL = 'http://localhost:1323/admin';
 
 const handleAdminLoginApi = async (payload: any) => {
   try {
