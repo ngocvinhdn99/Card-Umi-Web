@@ -13,11 +13,11 @@ UpdatedForm.propTypes = {};
 interface IMyProps {
   updatedData: any;
   handleUpdate: any;
-  isLoadingUpdateProfile: boolean;
+  loading: any;
 }
 
 function UpdatedForm(props: IMyProps) {
-  const { updatedData, handleUpdate, isLoadingUpdateProfile } = props;
+  const { updatedData, handleUpdate, loading } = props;
 
   const schema = yup.object().shape({
     id: yup.string().min(1, 'Vui lòng nhập id'),
@@ -82,7 +82,7 @@ function UpdatedForm(props: IMyProps) {
           type="primary"
           htmlType="submit"
           className={styles.submitBtn}
-          loading={isLoadingUpdateProfile}
+          loading={loading.effects['profile/handleUpdate']}
         >
           Submit
         </Button>

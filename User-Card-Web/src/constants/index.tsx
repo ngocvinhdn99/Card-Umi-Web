@@ -29,4 +29,5 @@ export const useTokenCheck = (tokenInfo: any) => {
 
 export const expirationTimeByMinutes = 60 * 60 * 1000;
 
-export const API_MAIN_URL = 'http://localhost:1323';
+// export const API_MAIN_URL = 'http://localhost:1323';
+export const API_MAIN_URL = 'https://cardgamedemo.herokuapp.com';

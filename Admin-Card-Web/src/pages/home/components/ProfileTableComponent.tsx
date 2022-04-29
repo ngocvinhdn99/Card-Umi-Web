@@ -14,7 +14,7 @@ interface IMyProps {
   profileList: any;
   handleProfileModelApi: Function;
   paginationModel: any;
-  isLoadingUpdateProfile: boolean;
+  loading: any;
   handleGetAllApi: Function;
 }
 
@@ -23,7 +23,7 @@ function ProfileTableComponent(props: IMyProps) {
     profileList,
     handleProfileModelApi,
     paginationModel,
-    isLoadingUpdateProfile,
+    loading,
     handleGetAllApi,
   } = props;
   const [pagination, setPagination] = useState({
@@ -108,8 +108,8 @@ function ProfileTableComponent(props: IMyProps) {
     setPagination(defaultPagination);
   };
 
-  const handleDelete = (data: any) => {
-    handleProfileModelApi('delete', data);
+  const handleDelete = async (data: any) => {
+    await handleProfileModelApi('delete', data);
     handleDefaultPagination();
   };
 
@@ -118,8 +118,8 @@ function ProfileTableComponent(props: IMyProps) {
       title: 'Do you Want to delete these items?',
       icon: <ExclamationCircleOutlined />,
       content: 'Some descriptions',
-      onOk() {
-        handleDelete(record);
+      async onOk() {
+        await handleDelete(record);
       },
       onCancel() {
         console.log('Cancel');
@@ -157,7 +157,12 @@ function ProfileTableComponent(props: IMyProps) {
 
   return (
     <div>
-      <Table columns={columns} dataSource={data} pagination={paginationTable} />
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={paginationTable}
+        loading={loading.effects['profile/handleGetAll']}
+      />
       <Modal
         title="Bot Update Form"
         visible={isUpdatedModalVisible}
@@ -170,7 +175,7 @@ function ProfileTableComponent(props: IMyProps) {
           <ProfileUpdatedForm
             updatedData={updatedData}
             handleUpdate={handleUpdate}
-            isLoadingUpdateProfile={isLoadingUpdateProfile}
+            loading={loading}
           />
         )}
       </Modal>

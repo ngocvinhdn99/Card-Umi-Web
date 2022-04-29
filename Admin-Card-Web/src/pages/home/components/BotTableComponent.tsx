@@ -16,11 +16,17 @@ interface IMyProps {
   handleBotsModelApi: Function;
   paginationModel: any;
   handleGetAllApi: Function;
+  loading: any;
 }
 
 function BotTableComponent(props: IMyProps) {
-  const { botList, handleBotsModelApi, paginationModel, handleGetAllApi } =
-    props;
+  const {
+    botList,
+    handleBotsModelApi,
+    paginationModel,
+    handleGetAllApi,
+    loading,
+  } = props;
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -106,18 +112,18 @@ function BotTableComponent(props: IMyProps) {
     setPagination(defaultPagination);
   };
 
-  const handleDelete = (data: any) => {
-    handleBotsModelApi('delete', data);
+  const handleDelete = async (data: any) => {
+    await handleBotsModelApi('delete', data);
     handleDefaultPagination();
   };
 
-  const showConfirm = (record: any) => {
+  const showConfirm = async (record: any) => {
     confirm({
       title: 'Do you Want to delete these items?',
       icon: <ExclamationCircleOutlined />,
       content: 'Some descriptions',
-      onOk() {
-        handleDelete(record);
+      async onOk() {
+        await handleDelete(record);
       },
       onCancel() {
         console.log('Cancel');
@@ -144,18 +150,18 @@ function BotTableComponent(props: IMyProps) {
     onChange: handlePageChange,
   };
 
-  const handleUpdate = (newUpdateData: any) => {
+  const handleUpdate = async (newUpdateData: any) => {
     if (!newUpdateData) return;
 
-    handleBotsModelApi('update', newUpdateData);
+    await handleBotsModelApi('update', newUpdateData);
     handleDefaultPagination();
 
     setIsUpdatedModalVisible(false);
   };
 
-  const handleCreate = (newData: any) => {
+  const handleCreate = async (newData: any) => {
     if (!newData) return;
-    handleBotsModelApi('create', newData);
+    await handleBotsModelApi('create', newData);
     handleDefaultPagination();
 
     setIsCreatedModelVisible(false);
@@ -174,7 +180,12 @@ function BotTableComponent(props: IMyProps) {
           Create a bot
         </Button>
       </div>
-      <Table columns={columns} dataSource={data} pagination={paginationTable} />
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={paginationTable}
+        loading={loading.effects['bots/handleGetAll']}
+      />
       <Modal
         title="Bot Update Form"
         visible={isUpdatedModalVisible}
@@ -187,6 +198,7 @@ function BotTableComponent(props: IMyProps) {
           <BotsUpdatedForm
             updatedData={updatedData}
             handleUpdate={handleUpdate}
+            loading={loading}
           />
         )}
       </Modal>
@@ -199,7 +211,7 @@ function BotTableComponent(props: IMyProps) {
         onCancel={() => handleCancel('create')}
         footer={null}
       >
-        <BotsCreatedForm handleCreate={handleCreate} />
+        <BotsCreatedForm handleCreate={handleCreate} loading={loading} />
       </Modal>
     </div>
   );

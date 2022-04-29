@@ -14,7 +14,7 @@ interface IMyProps {
   handleStartRamdomGames: Function;
   botSelectType: string;
   handlePreRamdomgames: Function;
-  winnerName: string;
+  games: any;
 }
 
 function DividerComponent(props: IMyProps) {
@@ -26,12 +26,13 @@ function DividerComponent(props: IMyProps) {
     handleStartRamdomGames,
     botSelectType,
     handlePreRamdomgames,
-    winnerName,
+    games,
   } = props;
   const [bet, setBet] = useState(0);
   const [gameCount, setGameCount] = useState(1);
 
   const { isRoll, isOpen } = statusList;
+  const { gameInfo } = games;
   const botImageRef = useRef(document.createElement('div'));
 
   const [isDisabledInput, setIsDisabledInput] = useState(false);
@@ -52,10 +53,11 @@ function DividerComponent(props: IMyProps) {
   };
 
   useEffect(() => {
+    const { winnerName } = gameInfo;
     if (isRoll && isOpen && winnerName) {
       message.success(`Chúc mừng ${winnerName} đã chiến thắng game này`);
     }
-  }, [statusList]);
+  }, [gameInfo]);
 
   const handleChangeBetValue = (e: any) => {
     const valueNumber = Number(e.target.value);

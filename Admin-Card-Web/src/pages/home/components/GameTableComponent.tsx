@@ -85,10 +85,11 @@ interface IMyProps {
   gameList: any;
   paginationModel: any;
   handleGetAllApi: any;
+  loading: any;
 }
 
 function GameTableComponent(props: IMyProps) {
-  const { gameList, paginationModel, handleGetAllApi } = props;
+  const { gameList, paginationModel, handleGetAllApi, loading } = props;
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -301,6 +302,7 @@ function GameTableComponent(props: IMyProps) {
       dataSource={data}
       pagination={paginationTable}
       scroll={{ x: 1300 }}
+      loading={loading.effects['games/handleGetAll']}
     />
   );
 }
